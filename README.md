@@ -53,6 +53,8 @@ ex) 졸음 : 고개를 숙인 상태, 눈을 장시간 감고있는 상태
 https://wwww.medium.com/@stepanfilonov/tracking-your-eyes-with-python-3952e66194a6
 
 표정인식 
+https://mechasolution.vn/source/blog/AI-tutorial/Emotion_Recognition/
+https://www.pyimagesearch.com/2017/04/03/facial-landmarks-dlib-opencv-python/
 
 행동인식
 https://www.learnopencv.com/deep-learning-based-human-pose-estimation-using-opencv-cpp-python/ <br>
