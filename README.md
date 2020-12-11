@@ -41,89 +41,11 @@ ex) 졸음 : 고개를 숙인 상태, 눈을 장시간 감고있는 상태
 4. 각 슬라이드와 진도상황 기록한 것을 대조해, 학생들의 이해도가 낮은 부분을 따로 기록
 5. 수업이 끝난 후, 이해도가 낮은 부분에 대해 시간과 슬라이드 기준으로 그래프로 그려서 교수자에게 제공
 
-## 3. 기술
-### 반응파악모듈 -시선인식
-1)Gaze Tracking API: github.com/antoinelame/GazeTracking
-
-사용모델<br>
-dlib shape_predictor_68_face_landmarks.dat
-
-- 왼쪽,오른쪽 눈동자의 좌표
-```
-gaze.pupil_left_coords()
-gaze.pupil_right_coords()
-```
-- 눈동자의 방향
-```
-gaze.is_left()
-gaze.is_right()
-gaze.is_center()
-```
-- 눈 감음
-```
-gaze.is_blinking()
-```
-
-2)콘텐츠 검출 API: github.com/nicewoong/pyTextGotcha<br>
-이미지 전처리를 위해 다음과 같은 다섯 단계를 거친다.
-- gray scale 적용
-```
-def gray_scale(img)
-```
-- Morph Gradient, Morph Close 적용
-```
-def gradient(img_gray)
-```
-- Adaptive Threshold 적용 
-```
-image_threshold = cv2.adaptiveThreshold(copy, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV)
-```
-- Long Line Removal 적용
-```
-int threshold; #선 추출 정확도
-int minLength; #추출할 선의 길이
-int lineGap; #이 픽셀 이내로 겹치는 선은 제외
-
-lines = cv2.HoughLinesP(copy, 1, np.pi / 180, threshold, np.array([]), min_line_length, max_line_gap)
-for line in lines:
-	x1, y1, x2, y2 = line[0]  # end point of line
-    	cv2.line(copy, (x1, y1), (x2, y2), (0, 0, 0), 2)
-```
-- Contour영역 잘라내기
-
-### 반응파악모듈 -표정인식
-1. OpenCV dlib -  68 face landmark로 찡그림, 하품, 졸림, 지겨움 등 표정 파악
-ex) 눈과 눈썹 point 사이 거리 추출 하여 찡그림 인식
-
-### 반응파악모듈 -행동인식
-#### OpenPose
-Caffe와 OpenCV를 기반으로 구성된 손, 얼굴 포함 몸의 움직임을 추적해주는 API <br>
-https://github.com/CMU-Perceptual-Computing-Lab/openpose
-<br>
-- pose_deploy_linevec.prototxt
-- pose_iter_440000.caffemodel
-<br>
-COCO모델에서 제공하는 POINT<br>
-Nose – 0, Neck – 1, Right Shoulder – 2, Right Elbow – 3, Right Wrist – 4, Left Shoulder – 5, Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11, Left Knee – 12, LAnkle – 13, Right Eye – 14, Left Eye – 15, Right Ear – 16, Left Ear – 17, Background – 18 <br>
-
-상체의 움직임중 끄덕임등 목과 머리의 움직임을 파악하기 위해서 Nose, Neck, Right Eye, Left Eye, Right Ear, Left Ear 사용. Pose pair중 필요한 상체 연결만 남김.<br>
-
-	POSE_PAIRS = [[1,0],[1,2],[1,5],[2,3],[3,4],[5,6],[6,7],[0,14],[0,15],[14,16],[15,17]]
-
-<div>
-  <img width="259" alt="화면 캡처 2020-12-10 205622" src="https://user-images.githubusercontent.com/63234878/101769370-35ab0e00-3b2a-11eb-85e2-72b065f7d5ee.png">
-</div>
-<br>
-webcam으로 캡쳐한 이미지를 전처리
-
-    inpBlob = cv2.dnn.blobFromImage(cv2.resize(frame,(300,300)), 1.0 / 255, (300,300), (0, 0, 0), swapRB=False, crop=False)
-
-네트워크를 통과한 후 몸의 관절을 하이라이트한 confidence map에서 global maxima를 가진 point추출. 추출된 포인트중 piar를 이루는 점들을 연결.
-
-    minVal, prob, minLoc, point = cv2.minMaxLoc(probMap)
-    
-#### 끄덕임 검출<br>
-Nose(0)과 Neck(1)이 같이 검출되었을 때 그 포인트 사이의 거리를 계산하고, 머리가 중립 상태일 때의 바운더리를 설정하여 그 이하, 이상으로 변화하면 움직임을 검출
+## 3. 기술블로그
+#### 반응파악모듈 중 행동인식 및 끄덕임 구현 : [박영빈 기술블로그](https://blog.naver.com/pybin48/222155889052)
+#### 반응파악모듈 및 표정인식 및 찡그림 구현: [양유진 기술블로그](https://dev-sailor.tistory.com/)
+#### 반응파악모듈 중 시선인식 및 콘텐츠검출: [이가은 기술블로그](https://kikie-lab.tistory.com/5)
+#### 반응파악모듈 중 표정 및 시선인식: [김서희 기술블로그](https://blog.naver.com/PostView.nhn?blogId=xyz0529&Redirect=View&logNo=222156361750&categoryNo=24&isAfterWrite=true&isMrblogPost=false&isHappyBeanLeverage=true&contentLength=42723)
 
 
 ## 4. reference
